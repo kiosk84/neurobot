@@ -1,0 +1,255 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Анимация для градиентного текста */
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+/* Удалена анимация tilt */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-opacity {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 15s linear infinite;
+  padding-left: 100%;
+}
+
+.hover-pause:hover .marquee {
+  animation-play-state: paused;
+}
+
+.marquee-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.marquee-content {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: marquee 15s linear infinite;
+}
+
+.marquee-container:hover .marquee-content {
+  animation-play-state: paused;
+}
+
+.marquee-gradient {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50px;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(15,23,42,0) 0%, rgba(15,23,42,1) 100%);
+  pointer-events: none;
+}
+
+.chat-title {
+  @apply text-sm font-medium text-white;
+}
+
+.chat-actions {
+  @apply flex gap-2 items-center;
+}
+
+.chat-action-btn {
+  @apply p-1 text-white hover:bg-white/10 rounded-full transition-colors;
+  min-width: 24px;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-item {
+  @apply flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all;
+}
+
+.chat-item-active {
+  @apply bg-gradient-to-r from-blue-500/20 to-blue-600/10 border-blue-500/30;
+}
+
+.chat-item-inactive {
+  @apply bg-gray-800/40 hover:bg-gray-700/50 border border-transparent hover:border-gray-600/50;
+}
+
+.chat-icon {
+  @apply p-2 rounded-lg bg-blue-500/20 text-blue-400 flex-shrink-0;
+}
+
+.chat-content {
+  @apply flex-1 min-w-0;
+}
+
+.chat-date {
+  @apply text-xs text-gray-400 mt-1 flex items-center gap-2;
+}
+
+.chat-title-wrapper {
+  @apply relative overflow-hidden;
+}
+
+.chat-title-content {
+  @apply whitespace-nowrap;
+}
+
+.chat-title-gradient {
+  @apply absolute right-0 top-0 w-8 h-full bg-gradient-to-l from-gray-800 to-transparent pointer-events-none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-default::-webkit-scrollbar {
+  display: block;
+  height: 4px;
+}
+
+.scrollbar-default {
+  -ms-overflow-style: auto;
+  scrollbar-width: thin;
+}
+
+@layer base {
+  :root {
+    --sidebar-width: 16rem;
+    --header-height: 4rem;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    
+    /* Dark mode optimization */
+    --dark-bg: 240 10% 3.9%;
+    --dark-fg: 0 0% 98%;
+    
+    /* Component specific variables */
+    --sidebar-bg: 240 10% 3.9%;
+    --sidebar-fg: 0 0% 98%;
+    --chat-bg: 0 0% 100%;
+    --message-bg: 240 5% 96%;
+  }
+
+  /* Improved dark mode configuration */
+  .dark {
+    --background: var(--dark-bg);
+    --foreground: var(--dark-fg);
+    --chat-bg: 240 10% 3.9%;
+    --message-bg: 240 5% 8%;
+  }
+}
+
+/* Mobile Optimizations */
+@layer components {
+  .container {
+    @apply px-4 mx-auto max-w-7xl sm:px-6 lg:px-8;
+  }
+
+  .sidebar {
+    @apply fixed left-0 top-0 z-40 h-screen w-64 
+           transform transition-transform duration-300 ease-in-out
+           bg-sidebar-bg text-sidebar-fg;
+  }
+
+  .main-content {
+    @apply flex-1 transition-all duration-300
+           lg:ml-[var(--sidebar-width)];
+  }
+
+  .chat-message {
+    @apply p-4 rounded-lg mb-4 max-w-[85%] sm:max-w-[75%];
+  }
+
+  .ai-message {
+    @apply bg-message-bg text-foreground
+           prose prose-sm sm:prose-base
+           max-w-none;
+  }
+}
+
+/* Responsive Typography */
+.ai-message {
+  @apply text-sm sm:text-base;
+}
+
+.ai-message p {
+  @apply mb-3 leading-relaxed;
+  word-break: break-word;
+}
+
+.ai-message code {
+  @apply bg-gray-700 px-1 py-0.5 rounded text-sm font-mono;
+}
+
+/* Image Optimizations */
+img {
+  @apply max-w-full h-auto;
+  loading: lazy;
+}
+
+/* Mobile-first Media Queries */
+@media (max-width: 640px) {
+  .container {
+    @apply px-2;
+  }
+  
+  .ai-message {
+    @apply max-w-[95%] text-sm;
+  }
+  
+  .message-input {
+    @apply text-sm;
+  }
+
+  .sidebar {
+    @apply w-full;
+  }
+}
+
+/* Utility Classes */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .scrollbar-hide {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
