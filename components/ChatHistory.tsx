@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, ChangeEvent, KeyboardEvent, MouseEvent } from "react";
 import { Input } from "@/components/ui/input";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { MessageSquare, Trash2, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -63,12 +64,21 @@ export function ChatHistory({
     }
   };
 
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [chatToDelete, setChatToDelete] = useState<Chat | null>(null);
+
   const handleDeleteClick = (e: MouseEvent, chat: Chat) => {
     e.preventDefault();
     e.stopPropagation();
-    if (window.confirm(`Удалить чат "${chat.title}"?`)) {
-      deleteChat(chat.id);
+    setChatToDelete(chat);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (chatToDelete) {
+      deleteChat(chatToDelete.id);
       toast({ description: "Чат удален", duration: 2000 });
+      setDeleteDialogOpen(false);
     }
   };
 
@@ -133,6 +143,12 @@ export function ChatHistory({
           </div>
         </div>
       ))}
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={`Удалить чат "${chatToDelete?.title}"?`}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }
