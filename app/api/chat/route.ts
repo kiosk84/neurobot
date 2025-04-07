@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
            model: "deepseek/deepseek-chat-v3-0324:free", // Используем бесплатную модель
           messages: processedMessages,
           // temperature: 0.7, // Убрали необязательный параметр
-          max_tokens: 1000 // Оставляем уменьшенный лимит
+          // max_tokens: 1000 // Убрали лимит токенов
         })
       });
 
