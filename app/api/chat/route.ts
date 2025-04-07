@@ -64,10 +64,10 @@ export async function POST(req: NextRequest) {
         },
         body: JSON.stringify({
           // model: "deepseek/deepseek-chat-v3-0324:free", // Пример модели, можно изменить
-           model: "openai/gpt-4o-mini", // Используем другую модель для теста
+           model: "deepseek/deepseek-chat-v3-0324:free", // Используем бесплатную модель
           messages: processedMessages,
-          temperature: 0.7,
-          max_tokens: 2000 // Устанавливаем лимит токенов
+          // temperature: 0.7, // Убрали необязательный параметр
+          max_tokens: 1000 // Оставляем уменьшенный лимит
         })
       });
 
