@@ -1,28 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: true,
+    // serverActions: true, // Corrected: should be an object or removed if not needed
+    serverActions: {}, // Use an empty object if server actions are used
   },
-  // Увеличиваем лимит размера тела запроса для API роутов
-  api: {
-    bodyParser: {
-      sizeLimit: '4mb'
-    }
-  },
-  // Настройки для работы с внешними API
-  headers: async () => {
-    return [
-      {
-        source: '/api/:path*',
-        headers: [
-          { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET,POST,OPTIONS' },
-          { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' }
-        ]
-      }
-    ]
-  },
+  // Removed invalid 'api' key
+  // Removed 'headers' key, CORS should be handled differently if needed
   webpack: (config) => {
     config.resolve.fallback = config.resolve.fallback || {};
     return config;

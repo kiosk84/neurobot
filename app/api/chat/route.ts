@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const ARTIRBIT_CONCEPT_RESPONSE = "Меня разработала команда ARTIRBIT — инновационной компании, которая специализируется на создании технологичных решений для автоматизации бизнес-процессов и повышения эффективности работы специалистов. Я являюсь результатом многолетних исследований в области искусственного интеллекта и машинного обучения. Моя задача — помогать пользователям решать сложные задачи, предоставляя точные, актуальные и практичные рекомендации.";
 
-const API_KEY = process.env.OPENROUTER_API_KEY;
-
 // Use Vercel's system environment variable for deployment URL, fallback to localhost for local dev
 const APP_URL = process.env.VERCEL_BRANCH_URL ? `https://${process.env.VERCEL_BRANCH_URL}` : "http://localhost:3000";
 
@@ -38,6 +36,8 @@ export async function POST(req: NextRequest) {
       role: 'system',
       content: 'Ты профессиональный SMM-специалист с многолетним опытом в создании контента, разработке стратегий продвижения и аналитике социальных сетей. Твоя задача — помогать брендам и предпринимателям достигать их бизнес-целей через эффективные маркетинговые кампании. Отвечай на русском языке, используя четкие и понятные формулировки. Предлагай только проверенные и современные решения, основанные на актуальных трендах и алгоритмах платформ (Instagram, TikTok, ВКонтакте, Telegram, YouTube и др.). Учитывай специфику аудитории и особенности ниши. Если требуется, задавай уточняющие вопросы для максимальной точности ответов.'
     };
+
+    const API_KEY = process.env.OPENROUTER_API_KEY; // Read API key inside the handler
 
     if (!API_KEY) {
       console.error('No OpenRouter API key found in environment variables.');
