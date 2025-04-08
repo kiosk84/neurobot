@@ -17,15 +17,32 @@ import type { Message } from "@/store/useChatStore";
 
 // Define user-friendly names for chat modes
 const modeNames: { [key: string]: string } = {
-  chat: "Чат ",
+  chat: "Чат",
   smm: "SMM Ассистент",
-  // Add other modes here if needed
 };
 
 export default function Home() {
   const { toast } = useToast();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("chat"); // Default to 'chat'
+  const [activeTab, setActiveTab] = useState("chat");
+  
+  // Закрываем сайдбар при клике вне его
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Если сайдбар открыт и клик был не по сайдбару или кнопке меню
+      if (isDrawerOpen) {
+        const sidebar = document.querySelector('[data-sidebar]');
+        const menuButton = document.querySelector('[data-menu-button]');
+        if (sidebar && !sidebar.contains(event.target as Node) && 
+            menuButton && !menuButton.contains(event.target as Node)) {
+          setIsDrawerOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isDrawerOpen]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,15 +61,30 @@ export default function Home() {
 
   const [message, setMessage] = useState("");
 
-  const memoizedCreateNewChat = useCallback(() => {
-    createNewChat();
+  const memoizedCreateNewChat = useCallback((type: 'chat' | 'smm') => {
+    createNewChat(type);
   }, [createNewChat]);
 
   useEffect(() => {
     if (chats.length === 0) {
-      memoizedCreateNewChat();
+      memoizedCreateNewChat('chat');
     }
   }, [chats.length, memoizedCreateNewChat]);
+
+  useEffect(() => {
+    if (activeChat) {
+      const currentChat = chats.find(c => c.id === activeChat);
+      if (currentChat && currentChat.type !== activeTab) {
+        const lastMatchingChat = chats
+          .filter(c => c.type === activeTab)
+          .slice(-1)[0];
+        
+        if (lastMatchingChat) {
+          switchChat(lastMatchingChat.id);
+        }
+      }
+    }
+  }, [activeTab, activeChat, chats, switchChat]);
 
   const updateMessages = (messages: Message[]) => {
     setMessages(messages);
@@ -113,7 +145,7 @@ export default function Home() {
     const timeoutId = setTimeout(() => {
       controller.abort();
       console.log('Request timed out');
-    }, 30000); // 30 seconds timeout
+    }, 30000);
 
     try {
       const response = await fetch('/api/chat', {
@@ -123,60 +155,47 @@ export default function Home() {
         },
         body: JSON.stringify({
           messages: updatedMessages,
-          // Send the activeTab value as chatType for the backend to decide the model
           chatType: activeTab
         }),
+        signal: controller.signal
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API Error:', {
-          status: response.status,
-          statusText: response.statusText,
-          error: errorText,
-          url: response.url
-        });
-        throw new Error(`Ошибка сервера: ${response.statusText}`);
-      }
 
       const data = await response.json();
 
-      // Проверяем новый формат ответа: data.success и data.data.choices
-      if (!data?.success || !data?.data?.choices?.[0]?.message) { 
-        console.error('Invalid response format:', data); // Логируем некорректный ответ
+      if (!response.ok) {
+        throw new Error(data.error || `Server error: ${response.statusText}`);
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || 'Unknown error occurred');
+      }
+
+      if (!data.data?.choices?.[0]?.message?.content) {
         throw new Error('Некорректный формат ответа от сервера');
       }
 
       const assistantMessage: Message = {
         id: nanoid(),
         role: 'assistant',
-        // Используем правильный путь к контенту: data.data.choices[0].message.content
-        content: data.data.choices[0].message.content || 'Не удалось получить ответ', 
+        content: data.data.choices[0].message.content,
         createdAt: new Date().toISOString()
       };
       
       updateMessages([...updatedMessages, assistantMessage]);
-      clearTimeout(timeoutId); // Clear timeout if fetch succeeds
     } catch (error) {
-      clearTimeout(timeoutId); // Clear timeout on error as well
-      if (error instanceof Error && error.name === 'AbortError') {
-        console.error('Ошибка: Запрос прерван по таймауту');
-        toast({
-          variant: "destructive",
-          title: "Время ожидания истекло",
-          description: "Сеть перегружена, повторите попытку.",
-        });
-      } else {
-        console.error('Ошибка:', error);
-        toast({
-          variant: "destructive",
-          title: "Ошибка",
-          description: error instanceof Error ? error.message : "Произошла ошибка при отправке сообщения",
-        });
-      }
+      console.error('Error in chat:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Произошла неизвестная ошибка';
+      
+      toast({
+        variant: "destructive",
+        title: "Ошибка",
+        description: errorMessage
+      });
+
+      updateMessages(messages);
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
-      requestAnimationFrame(scrollToBottom);
     }
   };
 
@@ -188,8 +207,8 @@ export default function Home() {
 
     const processingMessage: Message = { 
       id: nanoid(),
-      role: 'assistant', // Change role to 'assistant' so it's displayed
-      content: `Анализирую изображение... ⏳`, // Update text
+      role: 'assistant',
+      content: `Анализирую изображение... ⏳`,
       createdAt: new Date().toISOString()
     };
     const currentMessages = [...messages, processingMessage];
@@ -277,15 +296,12 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <main className="relative min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 overflow-hidden"> {/* Добавляем relative и overflow-hidden */}
-          {/* Conditionally render background only when sidebar is closed */}
+        <main className="relative min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
           { !isDrawerOpen && <AnimatedBackground /> }
-          {/* Header is fixed and has z-30, no need for this wrapper */}
           <Header
             onMenuClick={() => setIsDrawerOpen(prev => !prev)}
             isDrawerOpen={isDrawerOpen}
           />
-          {/* Sidebar is fixed and has z-50, remove this wrapper */}
           <Sidebar
             isDrawerOpen={isDrawerOpen}
             onClose={() => setIsDrawerOpen(false)}
@@ -298,18 +314,15 @@ export default function Home() {
               deleteChat={deleteChat}
             renameChat={renameChat}
           />
-          {/* Основной контейнер чата */}
-          <div className="relative z-10 container mx-auto px-0 sm:px-4 pt-16 max-w-4xl h-screen flex flex-col"> {/* Reduced top padding again */}
-            <div className="pb-2 border-b border-gray-700 text-center flex flex-col items-center"> {/* Use flex column */}
-              {/* Chat title FIRST */}
+          <div className="relative z-10 container mx-auto px-0 sm:px-4 pt-16 max-w-4xl h-screen flex flex-col">
+            <div className="pb-2 border-b border-gray-700 text-center flex flex-col items-center">
               {activeChat && (
-                <p className="text-xs text-gray-400 mb-0.5"> {/* Original size and margin */}
+                <p className="text-xs text-gray-400 mb-0.5">
                   {chats.find(c => c.id === activeChat)?.title}
                 </p>
               )}
-              {/* Display current chat mode SECOND */}
-              <span className="text-[10px] text-blue-400 font-medium px-2 py-0.5 rounded-full bg-blue-900/50"> {/* Original size */}
-                Режим: {modeNames[activeTab] || activeTab} {/* Show mode name or ID if name not found */}
+              <span className="text-[10px] text-blue-400 font-medium px-2 py-0.5 rounded-full bg-blue-900/50">
+                Режим: {modeNames[activeTab] || activeTab}
               </span>
             </div>
             <MessageList 
@@ -318,8 +331,7 @@ export default function Home() {
               chatType={activeTab === 'smm' ? 'smm' : 'default'} 
             />
           </div>
-          {/* MessageInput остается внизу, но должен быть поверх фона */}
-          <div className="relative z-20"> {/* Увеличиваем z-index для поля ввода */}
+          <div className="relative z-20">
             <MessageInput
               message={message}
               loading={loading}
@@ -335,3 +347,4 @@ export default function Home() {
     </ErrorBoundary>
   );
 }
+

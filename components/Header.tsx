@@ -8,21 +8,24 @@ interface HeaderProps {
   isDrawerOpen: boolean;
 }
 
-export function Header({ onMenuClick, isDrawerOpen }: HeaderProps) {
-  return (
-    // Remove pointer-events-none from the container
-    <div className="fixed top-4 left-0 right-0 z-30 flex items-center justify-between px-4"> 
-      {/* Menu button */}
-      <Button
+export function Header({ onMenuClick, isDrawerOpen }: HeaderProps) {  return (
+    <div className="fixed top-4 left-0 right-0 z-[60] flex items-center justify-between px-4">      <Button
         variant="ghost"
         size="icon"
-        className="p-2 rounded-md bg-gray-900/80 hover:bg-gray-700 pointer-events-auto"
+        data-menu-button
+        className="w-10 h-10 rounded-md bg-gray-900/80 hover:bg-gray-700 relative"
         onClick={() => onMenuClick(!isDrawerOpen)}
-        aria-label="Открыть меню"
+        aria-label={isDrawerOpen ? "Закрыть меню" : "Открыть меню"}
       >
-        <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isDrawerOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
-        </svg>
+        {isDrawerOpen ? (
+          <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        ) : (
+          <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        )}
       </Button>
 
       {/* Chat title */}

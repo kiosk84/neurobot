@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import logger from "@/lib/logger";
+import { cn } from '@/lib/utils';
 
 type MessageRole = 'user' | 'assistant' | 'system' | 'bot';
 

@@ -13,22 +13,23 @@ export type Message = {
 }
 
 export type Chat = {
-  id: string
-  title: string
-  messages: Message[]
-  createdAt: string
+  id: string;
+  title: string;
+  messages: Message[];
+  createdAt: string;
+  type: 'chat' | 'smm'; // Добавляем тип чата
 }
 
 interface ChatStore {
-  chats: Chat[]
-  activeChat: string | null
-  messages: Message[]
-  isLoading: boolean
-  setMessages: (messages: Message[]) => void
-  createNewChat: () => void
-  switchChat: (chatId: string) => void
-  deleteChat: (chatId: string) => void
-  renameChat: (chatId: string, newTitle: string) => void
+  chats: Chat[];
+  activeChat: string | null;
+  messages: Message[];
+  isLoading: boolean;
+  setMessages: (messages: Message[]) => void;
+  createNewChat: (type: 'chat' | 'smm') => void; // Обновляем сигнатуру
+  switchChat: (chatId: string) => void;
+  deleteChat: (chatId: string) => void;
+  renameChat: (chatId: string, newTitle: string) => void;
 }
 
 export const useChatStore = create<ChatStore>()(
@@ -51,13 +52,14 @@ export const useChatStore = create<ChatStore>()(
         }
       },
 
-      createNewChat: () => {
-        console.log('Creating new chat')
+      createNewChat: (type) => {
+        console.log('Creating new chat with type:', type)
         const newChat = {
           id: nanoid(), // Use nanoid for unique IDs
-          title: `Новый чат ${get().chats.length + 1}`,
+          title: `${type === 'smm' ? 'SMM' : 'Чат'} ${get().chats.length + 1}`,
           messages: [],
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
+          type
         };
 
         set({
@@ -112,21 +114,32 @@ export const useChatStore = create<ChatStore>()(
           console.log('Rehydrating chat store state...');
           const seenIds = new Set<string>();
           let stateModified = false;
+          
+          // Обновляем существующие чаты, добавляя тип, если его нет
           state.chats = state.chats.map(chat => {
-            // Проверяем, похож ли ID на старый timestamp (числовая строка)
-            // и проверяем на дубликаты на всякий случай
             const isOldIdFormat = /^\d+$/.test(chat.id);
-            if (isOldIdFormat || seenIds.has(chat.id)) {
+            const needsNewId = isOldIdFormat || seenIds.has(chat.id);
+            
+            if (needsNewId) {
               const oldId = chat.id;
               const newId = nanoid(); // Use nanoid here as well
               console.warn(`Replacing old/duplicate chat ID ${oldId} with ${newId}`);
               seenIds.add(newId);
               stateModified = true;
-              return { ...chat, id: newId };
+              return { 
+                ...chat, 
+                id: newId,
+                type: chat.type || 'chat' // Добавляем тип по умолчанию
+              };
             }
+            
             seenIds.add(chat.id);
-            return chat;
+            return {
+              ...chat,
+              type: chat.type || 'chat' // Добавляем тип по умолчанию
+            };
           });
+
           if (stateModified) {
              console.log('Chat store state modified during rehydration.');
           }

@@ -48,10 +48,13 @@ const components: Components = {
           {({ className: hlClassName, style, tokens, getLineProps, getTokenProps }) => (
             <pre className={cn("p-4 rounded-md overflow-x-auto", hlClassName)} style={style}>
               {tokens.map((line, i) => (
+                // Явно передаем key={i} вместе с остальными пропами из getLineProps
                 <div key={i} {...getLineProps({ line, key: i })}>
-                  {line.map((token, key) => (
-                    <span key={key} {...getTokenProps({ token, key })} />
-                  ))}
+                  {line.map((token, innerKey) => { // Используем другое имя переменной для ясности
+                    const tokenProps = getTokenProps({ token, key: innerKey });
+                    // Явно передаем key, остальные пропсы разворачиваем
+                    return <span key={innerKey} {...tokenProps} />;
+                  })}
                 </div>
               ))}
             </pre>

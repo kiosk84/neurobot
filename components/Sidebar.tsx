@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import React, { useCallback } from 'react';
 import { User, Settings, MessageSquare, Plus, Heart, Info, Megaphone } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -5,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ChatHistory, type Chat } from "@/components/ChatHistory";
 import { MenuItem } from "@/components/ui/menu-item";
+import Link from 'next/link';
 
 interface SidebarProps {
   isDrawerOpen: boolean;
@@ -13,7 +15,7 @@ interface SidebarProps {
   setActiveTab: (tab: string) => void;
   chats: Chat[];
   activeChat: string | null;
-  createNewChat: () => void;
+  createNewChat: (type: 'chat' | 'smm') => void;
   switchChat: (chatId: string) => void;
   deleteChat: (chatId: string) => void;
   renameChat: (chatId: string, newTitle: string) => void;
@@ -40,41 +42,38 @@ const SidebarComponent = React.memo(({
     onClose();
   }, [onClose]);
 
+  const handleCreateNewChat = useCallback(() => {
+    createNewChat(activeTab as 'chat' | 'smm');
+    onClose();
+  }, [createNewChat, activeTab, onClose]);
+
   return (
     <>
+      {/* Overlay */}
       {isDrawerOpen && (
-        <div 
-          className={`fixed inset-0 bg-black/50 z-30 lg:hidden transition-opacity duration-300 ${
-            isDrawerOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
+        <div
+          className="fixed inset-0 z-40 bg-black/80 lg:hidden"
           onClick={handleOverlayClick}
-          aria-hidden="true"
         />
       )}
 
-      <aside
-        className={`fixed left-0 top-16 z-50 h-[calc(100vh-4rem)] w-64 bg-gray-800 transition-all duration-300 ${
-          isDrawerOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-        role="navigation"
-        aria-label="Основное меню"
-      >
-        <div className="flex flex-col h-full">
-          <ScrollArea className="flex-1 px-3 py-4">
-            <div className="space-y-6" role="menu">
+      {/* Sidebar */}      <aside
+        data-sidebar
+        className={cn(
+          "fixed top-0 left-0 z-50 h-full w-64 bg-gray-900 border-r border-gray-800 transition-transform duration-300 ease-in-out pt-16",
+          isDrawerOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      ><div className="flex flex-col h-full">
+          <ScrollArea className="flex-1 px-3 py-2">
+            <div className="mb-2">
               <MenuItem
                 icon={<MessageSquare className="h-5 w-5" />}
                 label="Чат"
                 subtitle="Общение с нейросетью"
                 isActive={activeTab === "chat"}
-                onClick={async () => {
-                  try {
-                    handleTabChange("chat");
-                    await createNewChat();
-                    onClose();
-                  } catch (error) {
-                    console.error('Failed to create chat:', error);
-                  }
+                onClick={() => {
+                  handleTabChange("chat");
+                  onClose();
                 }}
               />
 
@@ -83,26 +82,21 @@ const SidebarComponent = React.memo(({
                 label="SMM Ассистент"
                 subtitle="Помощь с контентом"
                 isActive={activeTab === "smm"}
-                onClick={async () => {
-                  try {
-                    handleTabChange("smm");
-                    await createNewChat();
-                    onClose();
-                  } catch (error) {
-                    console.error('Failed to create SMM chat:', error);
-                  }
+                onClick={() => {
+                  handleTabChange("smm");
+                  onClose();
                 }}
-              />
-
-              <div role="group" aria-label="Учетная запись">
+              />              <div role="group" aria-label="Учетная запись">
                 <Separator className="my-2 bg-gray-700" />
                 <div className="space-y-1">
-                  <MenuItem
-                    icon={<User className="h-5 w-5" />}
-                    label="Личный кабинет"
-                    isActive={false}
-                    onClick={onClose}
-                  />
+                  <Link href="/account" className="block text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-150">
+                    <MenuItem
+                      icon={<User className="h-5 w-5" />}
+                      label="Личный кабинет"
+                      isActive={false}
+                      onClick={onClose}
+                    />
+                  </Link>
                   <MenuItem
                     icon={<Settings className="h-5 w-5" />}
                     label="Настройки"
@@ -131,14 +125,7 @@ const SidebarComponent = React.memo(({
               <div role="group" aria-label="История чатов">
                 <Separator className="my-2 bg-gray-700" />
                 <Button
-                  onClick={async () => {
-                    try {
-                      await createNewChat();
-                      onClose();
-                    } catch (error) {
-                      console.error('Error creating new chat:', error);
-                    }
-                  }}
+                  onClick={handleCreateNewChat}
                   className="w-full gap-3 rounded-xl bg-blue-800 hover:bg-blue-700 text-white transition-colors"
                   aria-label="Создать новый чат"
                 >
