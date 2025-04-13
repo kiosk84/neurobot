@@ -25,7 +25,7 @@ export default function Home() {
   const { toast } = useToast();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("chat");
-  
+
   // Закрываем сайдбар при клике вне его
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -33,7 +33,7 @@ export default function Home() {
       if (isDrawerOpen) {
         const sidebar = document.querySelector('[data-sidebar]');
         const menuButton = document.querySelector('[data-menu-button]');
-        if (sidebar && !sidebar.contains(event.target as Node) && 
+        if (sidebar && !sidebar.contains(event.target as Node) &&
             menuButton && !menuButton.contains(event.target as Node)) {
           setIsDrawerOpen(false);
         }
@@ -78,7 +78,7 @@ export default function Home() {
         const lastMatchingChat = chats
           .filter(c => c.type === activeTab)
           .slice(-1)[0];
-        
+
         if (lastMatchingChat) {
           switchChat(lastMatchingChat.id);
         }
@@ -131,9 +131,9 @@ export default function Home() {
     e.preventDefault();
     if (!message.trim() || loading) return;
 
-    const newMessage: Message = { 
+    const newMessage: Message = {
       id: nanoid(),
-      role: 'user', 
+      role: 'user',
       content: message.trim(),
       createdAt: new Date().toISOString()
     };
@@ -181,12 +181,12 @@ export default function Home() {
         content: data.data.choices[0].message.content,
         createdAt: new Date().toISOString()
       };
-      
+
       updateMessages([...updatedMessages, assistantMessage]);
     } catch (error) {
       console.error('Error in chat:', error);
       const errorMessage = error instanceof Error ? error.message : 'Произошла неизвестная ошибка';
-      
+
       toast({
         variant: "destructive",
         title: "Ошибка",
@@ -207,7 +207,7 @@ export default function Home() {
 
     setLoading(true);
 
-    const processingMessage: Message = { 
+    const processingMessage: Message = {
       id: nanoid(),
       role: 'assistant',
       content: `Анализирую изображение... ⏳`,
@@ -233,9 +233,9 @@ export default function Home() {
         const messagesWithoutProcessing = currentMessages.filter(msg => msg !== processingMessage);
 
         if (analysisText) {
-          const botMessage: Message = { 
+          const botMessage: Message = {
             id: nanoid(),
-            role: 'assistant', 
+            role: 'assistant',
             content: analysisText,
             createdAt: new Date().toISOString()
           };
@@ -295,7 +295,7 @@ export default function Home() {
         <div className="flex h-screen w-full items-center justify-center bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
           <div className="flex flex-col items-center gap-2">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-500 border-t-blue-500"></div>
-            <h2 className="text-xl font-semibold text-gray-200">Загрузка приложения...</h2>
+            <h2 className="text-xl font-semibold text-gray-200">Загрузка приложения... (Обновлено 10.04.2025)</h2>
             <p className="text-sm text-gray-400">Пожалуйста, подождите</p>
           </div>
         </div>
@@ -329,10 +329,10 @@ export default function Home() {
                   Режим: {modeNames[activeTab] || activeTab}
               </span>
             </div>
-            <MessageList 
-              messages={messages} 
+            <MessageList
+              messages={messages}
               messagesEndRef={messagesEndRef}
-              chatType={activeTab === 'smm' ? 'smm' : 'default'} 
+              chatType={activeTab === 'smm' ? 'smm' : 'default'}
             />
           </div>
           <div className="relative z-20">
