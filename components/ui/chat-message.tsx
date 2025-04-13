@@ -46,7 +46,7 @@ const components: Components = {
           {...props}
         >
           {({ className: hlClassName, style, tokens, getLineProps, getTokenProps }) => (
-            <pre className={cn("p-4 rounded-md overflow-x-auto", hlClassName)} style={style}>
+            <pre className={cn("p-2 sm:p-2 sm:p-2 sm:p-2 sm:p-4 rounded-md overflow-x-auto text-xs sm:text-sm text-xs sm:text-sm text-xs sm:text-sm text-xs sm:text-sm", hlClassName)} style={style}>
               {tokens.map((line, i) => (
                 // Явно передаем key={i} вместе с остальными пропами из getLineProps
                 <div key={i} {...getLineProps({ line, key: i })}>
@@ -63,7 +63,7 @@ const components: Components = {
       );
     }
     return (
-      <code className={cn("relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold", className)} {...props}>
+      <code className={cn("relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-xs sm:text-xs sm:text-xs sm:text-xs sm:text-sm font-semibold", className)} {...props}>
         {children}
       </code>
     );
@@ -122,24 +122,24 @@ export const ChatMessage = ({
       {/* Message Bubble */}
       <div
         className={cn(
-          "p-4 rounded-2xl max-w-[90%] relative group", // Padding back to p-4, keep max-width and group
+          "p-3 sm:p-3 sm:p-3 sm:p-3 sm:p-4 rounded-2xl max-w-[95%] sm:max-w-[95%] sm:max-w-[95%] sm:max-w-[95%] sm:max-w-[90%] relative group", // Smaller padding on mobile
           isUser
-            ? "bg-gray-800/80 text-gray-100" // Use AI background for user
+            ? "bg-gray-800/80 text-gray-100" // Use AI background forLighter shadow
             : isAnalysis
               ? "bg-purple-800/80 text-white" // Added /80 for opacity
               : "bg-gray-800/80 text-gray-100" // Added /80 for opacity
         )}
-        style={{ // Keep existing box-shadow logic
+        style={{ // Reduced shadow on mobile
           boxShadow: isUser
-            ? '0 0 15px 3px rgba(156, 163, 175, 0.5)' // Use AI shadow for user
+            ? '0 0 10px 2px rgba(156, 163, 175, 0.4)' // Lighter shadow for user
             : isAnalysis
-              ? '0 0 15px 3px rgba(168, 85, 247, 0.4)'
-              : '0 0 15px 3px rgba(156, 163, 175, 0.5)'
+              ? '0 0 10px 2px rgba(168, 85, 247, 0.3)' // Purple shadow for analysis
+              : '0 0 10px 2px rgba(156, 163, 175, 0.4)' // Default shadow
         }}
       >
         {/* Message Content and Timestamp */}
         <div className="min-w-0"> {/* Removed flex-1 as it's inside the bubble now */}
-          <div className="prose prose-invert max-w-none mb-1">
+          <div className="prose prose-invert max-w-none mb-1 prose-p:text-sm sm:prose-p:text-base prose-headings:text-base sm:prose-headings:text-lg prose-pre:text-xs sm:prose-pre:text-sm">
             <div className="markdown-content break-words">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
@@ -150,21 +150,21 @@ export const ChatMessage = ({
             </div>
           </div>
           {/* Timestamp and Copy Button Container */}
-          <div className="flex items-center justify-start mt-3 text-xs opacity-70">
+          <div className="flex items-center justify-start mt-2 sm:mt-3 text-[10px] sm:text-xs opacity-70">
             {timestamp && (
-              <span>
-                {new Date(timestamp).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })} {new Date(timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+              <span className="truncate max-w-[120px] sm:max-w-none">
+                {new Date(timestamp).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' })} {new Date(timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
               </span>
             )}
             {/* Copy Button - Conditionally render for non-user messages */}
-            {!isUser && ( // Temporarily removed clipboard check for debugging
+            {!isUser && (
               <button
                 onClick={handleCopy}
-                className="ml-2 p-0.5 rounded bg-gray-700/50 text-gray-400 hover:bg-gray-600/70 hover:text-gray-200 transition-colors duration-200 flex-shrink-0" // Reduced padding, added flex-shrink-0
+                className="ml-2 p-0.5 rounded bg-gray-700/50 text-gray-400 hover:bg-gray-600/70 hover:text-gray-200 transition-colors duration-200"
                 aria-label="Скопировать сообщение"
                 title="Скопировать сообщение"
               >
-                {isCopied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
+                {isCopied ? <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-green-400" /> : <Copy className="h-3 w-3 sm:h-3.5 sm:w-3.5" />}
               </button>
             )}
           </div>

@@ -111,6 +111,7 @@ export default function Home() {
           variant: "destructive",
           title: "Ошибка инициализации",
           description: "Не удалось загрузить историю чатов",
+          duration: 1000
         });
       } finally {
         setTimeout(() => {
@@ -189,7 +190,8 @@ export default function Home() {
       toast({
         variant: "destructive",
         title: "Ошибка",
-        description: errorMessage
+        description: errorMessage,
+        duration: 1000
       });
 
       updateMessages(messages);
@@ -244,6 +246,7 @@ export default function Home() {
              variant: "default",
              title: "Анализ изображения",
              description: "Не удалось получить описание изображения.",
+             duration: 1000
            });
         }
 
@@ -262,6 +265,7 @@ export default function Home() {
         variant: "destructive",
         title: "Ошибка анализа изображения",
         description: error instanceof Error ? error.message : "Произошла неизвестная ошибка",
+        duration: 1000
       });
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -314,15 +318,15 @@ export default function Home() {
               deleteChat={deleteChat}
             renameChat={renameChat}
           />
-          <div className="relative z-10 container mx-auto px-0 sm:px-4 pt-16 max-w-4xl h-screen flex flex-col">
-            <div className="pb-2 border-b border-gray-700 text-center flex flex-col items-center">
+          <div className="relative z-10 container mx-auto px-0 sm:px-4 pt-14 sm:pt-14 sm:pt-14 sm:pt-14 sm:pt-16 max-w-4xl h-screen flex flex-col">
+            <div className="pb-1 sm:pb-1 sm:pb-1 sm:pb-1 sm:pb-2 border-b border-gray-700 text-center flex flex-col items-center">
               {activeChat && (
-                <p className="text-xs text-gray-400 mb-0.5">
+                <p className="text-[8px] sm:text-[10px] sm:text-[10px] sm:text-[10px] sm:text-[10px] sm:text-xs text-gray-400 mb-0.5 truncate max-w-[200px] sm:max-w-xs truncate max-w-[200px] sm:max-w-xs truncate max-w-[200px] sm:max-w-xs truncate max-w-[200px] sm:max-w-xs">
                   {chats.find(c => c.id === activeChat)?.title}
                 </p>
               )}
-              <span className="text-[10px] text-blue-400 font-medium px-2 py-0.5 rounded-full bg-blue-900/50">
-                Режим: {modeNames[activeTab] || activeTab}
+              <span className="text-[8px] sm:text-[8px] sm:text-[8px] sm:text-[10px] text-blue-400 font-medium px-1.5 sm:px-1.5 sm:px-1.5 sm:px-2 py-0.5 rounded-full bg-blue-900/50">
+                  Режим: {modeNames[activeTab] || activeTab}
               </span>
             </div>
             <MessageList 
@@ -334,10 +338,10 @@ export default function Home() {
           <div className="relative z-20">
             <MessageInput
               message={message}
-              loading={loading}
-            fileInputRef={fileInputRef}
-            onMessageChange={setMessage}
-            onSubmit={handleMessageSubmit}
+                  loading={loading}
+                  fileInputRef={fileInputRef}
+                  onMessageChange={setMessage}
+                onSubmit={handleMessageSubmit}
               onImageUpload={handleImageUpload}
             />
           </div>

@@ -60,7 +60,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
     navigator.clipboard.writeText(content);
     toast({
       description: "Текст скопирован",
-      duration: 1500
+      duration: 1000
     });
   };
 

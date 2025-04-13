@@ -52,28 +52,30 @@ export function MessageInput({
 
 
   return (
-    <form onSubmit={handleSubmit} className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-900 via-gray-900/90 to-transparent z-10">
+    <form onSubmit={handleSubmit} className="fixed bottom-0 left-0 right-0 p-2 sm:p-4 bg-gradient-to-t from-gray-900 via-gray-900/90 to-transparent z-10">
       <div className="relative max-w-4xl mx-auto flex items-end gap-2">
-        {/* File Upload Button */}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                type="button"
-                size="icon"
-                onClick={() => fileInputRef.current?.click()}
-                className="h-10 w-10 rounded-xl bg-gray-800 hover:bg-gray-600 text-gray-300 transition-all duration-150 ease-in-out flex items-center justify-center cursor-pointer shadow-md focus:outline-none focus:ring-3 focus:ring-blue-300/50 disabled:opacity-35 disabled:cursor-not-allowed flex-shrink-0"
-                aria-label="Прикрепить файл"
-                disabled={loading}
-              >
-                <UploadIcon className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Прикрепить файл</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        {/* File Upload Button - скрываем на очень маленьких экранах */}
+        <div className="hidden xs:block">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  size="icon"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-10 w-10 rounded-xl bg-gray-800 hover:bg-gray-600 text-gray-300 transition-all duration-150 ease-in-out flex items-center justify-center cursor-pointer shadow-md focus:outline-none focus:ring-3 focus:ring-blue-300/50 disabled:opacity-35 disabled:cursor-not-allowed flex-shrink-0"
+                  aria-label="Прикрепить файл"
+                  disabled={loading}
+                >
+                  <UploadIcon className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Прикрепить файл</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         <input
           type="file"
           id="file-upload"
@@ -84,27 +86,41 @@ export function MessageInput({
           disabled={loading} // Disable upload when loading
         />
 
+        {/* Мобильная кнопка загрузки файла (отображается только на маленьких экранах) */}
+        <div className="xs:hidden">
+          <Button
+            type="button"
+            size="icon"
+            onClick={() => fileInputRef.current?.click()}
+            className="h-10 w-10 rounded-xl bg-gray-800 hover:bg-gray-600 text-gray-300 transition-all duration-150 ease-in-out flex items-center justify-center cursor-pointer shadow-md focus:outline-none focus:ring-3 focus:ring-blue-300/50 disabled:opacity-35 disabled:cursor-not-allowed flex-shrink-0"
+            aria-label="Прикрепить файл"
+            disabled={loading}
+          >
+            <UploadIcon className="h-5 w-5" />
+          </Button>
+        </div>
+
         {/* Textarea with animated border wrapper */}
         <div className="flex-1 relative group"> {/* group остается для hover эффекта */}
           {/* Постоянная синяя рамка с усилением при наведении */}
           <div className="absolute -inset-0.5 bg-blue-500 rounded-xl blur opacity-50 group-hover:opacity-100 transition duration-300"></div>
           {/* Относительное позиционирование для textarea */}
-          <div className="relative"> 
+          <div className="relative">
             <textarea
               value={message}
-              onChange={(e) => onMessageChange(e.target.value)} // Use direct onChange for state update
-            onInput={handleTextareaInput} // Use onInput for auto-resize
+              onChange={(e) => onMessageChange(e.target.value)}
+              onInput={handleTextareaInput}
               placeholder="Напишите сообщение..."
-              className="relative w-full min-h-[44px] max-h-[200px] bg-gray-800/90 backdrop-blur-sm text-white rounded-xl pl-4 pr-4 py-2.5 text-sm leading-snug focus:outline-none focus:ring-2 focus:ring-blue-500/50 border border-transparent transition-all resize-none shadow-md overflow-y-auto placeholder:text-gray-500" // Убрали border-[0.5px] и hover:border
+              className="relative w-full min-h-[44px] max-h-[200px] bg-gray-800/90 backdrop-blur-sm text-white rounded-xl pl-3 sm:pl-4 pr-3 sm:pr-4 py-2 sm:py-2.5 text-sm leading-snug focus:outline-none focus:ring-2 focus:ring-blue-500/50 border border-transparent transition-all resize-none shadow-md overflow-y-auto placeholder:text-gray-500"
               rows={1}
               onKeyDown={handleTextareaKeyDown}
-            style={{ 
-              height: 'auto', 
-              overflowY: 'hidden',
-              lineHeight: '1.5rem' // Better line height for alignment
-            }}
-            disabled={loading} // Disable textarea when loading
-          />
+              style={{
+                height: 'auto',
+                overflowY: 'hidden',
+                lineHeight: '1.5rem'
+              }}
+              disabled={loading}
+            />
           </div>
         </div>
 

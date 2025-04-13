@@ -1,3 +1,4 @@
 {
-    "workbench.editor.defaultBinaryEditor": "default"
+    "workbench.editor.defaultBinaryEditor": "default",
+    "zencoder.enableRepoIndexing": true
 }
