@@ -295,7 +295,7 @@ export default function Home() {
         <div className="flex h-screen w-full items-center justify-center bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
           <div className="flex flex-col items-center gap-2">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-500 border-t-blue-500"></div>
-            <h2 className="text-xl font-semibold text-gray-200">Загрузка приложения... (Обновлено 10.04.2025)</h2>
+            <h2 className="text-xl font-semibold text-gray-200">Загрузка приложения...</h2>
             <p className="text-sm text-gray-400">Пожалуйста, подождите</p>
           </div>
         </div>
