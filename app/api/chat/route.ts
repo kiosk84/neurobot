@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   try {
     const { messages, chatType }: RequestBody = await req.json();
 
-    const systemMessage = chatType === 'smm' 
+    const systemMessage = chatType === 'smm'
       ? {
           role: 'system',
           content: 'Ты профессиональный SMM-специалист с многолетним опытом в создании контента, разработке стратегий продвижения и аналитике социальных сетей. Твоя задача — помогать брендам и предпринимателям достигать их бизнес-целей через эффективные маркетинговые кампании. Отвечай на русском языке, используя четкие и понятные формулировки. Предлагай только проверенные и современные решения, основанные на актуальных трендах и алгоритмах платформ (Instagram, TikTok, ВКонтакте, Telegram, YouTube и др.). Учитывай специфику аудитории и особенности каждой платформы.'
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-4-scout:free",
+        model: "meta-llama/llama-4-maverick:free",
         messages: [systemMessage, ...messages]
       })
     });
